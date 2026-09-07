@@ -1,4 +1,4 @@
-version: "1.0"
+version: "1.1"
 base_profile: "examples/profile_test_01.json"
 notes:
   - "Chaque cas part du profil fictif de base et applique uniquement les mutations listées."
@@ -173,6 +173,46 @@ cases:
     expect:
       ajpa: A_EXPLORER
 
+  - id: aah_disability_signal
+    description: "Adulte avec situation de handicap déclarée"
+    set:
+      person.age: 35
+      health_disability.health_or_disability_difficulty: true
+    expect:
+      aah: EVALUATION_HUMAINE_NECESSAIRE
+
+  - id: aah_under_16
+    description: "Personne de moins de 16 ans"
+    set:
+      person.age: 15
+      health_disability.health_or_disability_difficulty: true
+    expect:
+      aah: CONDITIONS_DECLAREES_INCOMPATIBLES
+
+  - id: aeeh_child_signal
+    description: "Enfant de 10 ans avec difficulté de santé ou handicap"
+    set:
+      family.children:
+        - age: 10
+          in_school: true
+          disability_or_health_difficulty: true
+    expect:
+      aeeh: EVALUATION_HUMAINE_NECESSAIRE
+
+  - id: fsl_rent_arrears
+    description: "Dette de loyer déclarée"
+    set:
+      housing.rent_arrears: true
+    expect:
+      fsl: A_EXPLORER
+
+  - id: fsl_energy_debt
+    description: "Dette d'énergie déclarée"
+    set:
+      housing.energy_debt: true
+    expect:
+      fsl: A_EXPLORER
+
   - id: no_disability_signals
     description: "Aucun signal handicap ou santé"
     set:
@@ -184,3 +224,4 @@ cases:
       - rqth
       - cmi
       - pension_invalidite
+      - aah
