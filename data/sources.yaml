@@ -1,4 +1,4 @@
-version: "1.1"
+version: "1.2"
 updated_at: "2026-09-07"
 policy:
   primary_sources_required_for:
@@ -23,6 +23,7 @@ policy:
     - travail-emploi.gouv.fr
     - impots.gouv.fr
     - lassuranceretraite.fr
+    - chequeenergie.gouv.fr
 
 sources:
   css_ameli:
@@ -76,4 +77,28 @@ sources:
   aspa_cnav_bareme_2026:
     authority: "Cnav - L'Assurance retraite"
     url: "https://legislation.lassuranceretraite.fr/Pdf/circulaire_cnav_2025_29_22122025.pdf"
+    last_checked: "2026-09-07"
+  ars_caf_bareme_2026:
+    authority: "Caisse nationale des allocations familiales"
+    url: "https://www.caf.fr/professionnels/offres-et-services/accompagnement-des-allocataires/bareme-allocation-de-rentree-scolaire"
+    last_checked: "2026-09-07"
+  ars_caf_2026:
+    authority: "Caisse nationale des allocations familiales"
+    url: "https://www.caf.fr/allocataires/actualites/actualites-nationales/allocation-de-rentree-scolaire-ce-qu-il-faut-savoir"
+    last_checked: "2026-09-07"
+  asf_caf:
+    authority: "Caisse nationale des allocations familiales"
+    url: "https://www.caf.fr/professionnels/offres-et-services/accompagnement-des-allocataires/l-allocation-de-soutien-familial-asf"
+    last_checked: "2026-09-07"
+  asf_aripa:
+    authority: "ARIPA - Caf"
+    url: "https://www.pension-alimentaire.caf.fr/usagers/aides-et-demarches/allocation-de-soutien-familial"
+    last_checked: "2026-09-07"
+  cheque_energie_2026:
+    authority: "Ministère chargé de l'énergie"
+    url: "https://chequeenergie.gouv.fr/beneficiaire/faq"
+    last_checked: "2026-09-07"
+  cheque_energie_simulateur:
+    authority: "Ministère chargé de l'énergie"
+    url: "https://chequeenergie.gouv.fr/beneficiaire/"
     last_checked: "2026-09-07"
