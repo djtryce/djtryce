@@ -1,0 +1,60 @@
+version: "0.1"
+status: "test_design"
+updated_at: "2026-09-07"
+
+cases:
+  - id: css_low_income_single
+    description: "Personne seule avec faibles ressources"
+    profile:
+      household_size: 1
+      residence: "metropolitan_france"
+      annual_css_resources: 9000
+    expected:
+      css: "POTENTIEL"
+
+  - id: css_between_thresholds
+    description: "Personne seule entre plafond gratuit et plafond avec participation"
+    profile:
+      household_size: 1
+      residence: "metropolitan_france"
+      annual_css_resources: 12000
+    expected:
+      css: "POTENTIEL_WITH_CONTRIBUTION"
+
+  - id: invalidity_missing_medical_assessment
+    description: "Conditions administratives plausibles mais appréciation médicale absente"
+    profile:
+      age: 50
+      insured_employee: true
+      medical_capacity_loss_assessed: false
+    expected:
+      pension_invalidite: "EVALUATION_HUMAINE_NECESSAIRE"
+
+  - id: pch_functional_difficulties
+    description: "Difficultés importantes d'autonomie sans décision MDPH"
+    profile:
+      disability_daily_life_difficulties: true
+      mdph_decision: null
+    expected:
+      pch: "A_EXPLORER"
+
+  - id: rqth_work_limitation
+    description: "Limitation de travail déclarée, sans RQTH existante"
+    profile:
+      work_limitation_due_to_health_or_disability: true
+      rqth_existing: false
+    expected:
+      rqth: "EVALUATION_HUMAINE_NECESSAIRE"
+
+  - id: housing_aid_requires_simulation
+    description: "Locataire avec loyer déclaré"
+    profile:
+      tenant: true
+      monthly_rent: 550
+      household_income_known: true
+    expected:
+      apl_alf_als: "A_SIMULER"
+
+notes:
+  - "Ces cas valident les états du moteur, pas l'attribution administrative finale."
+  - "Les tests financiers complets seront ajoutés après audit de chaque formule et période de référence."
