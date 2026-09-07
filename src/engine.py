@@ -29,6 +29,8 @@ class RightsEngine:
 
         for evaluator in (
             self._evaluate_css,
+            self._evaluate_rsa,
+            self._evaluate_prime_activite,
             self._evaluate_housing,
             self._evaluate_pch,
             self._evaluate_rqth,
@@ -36,6 +38,7 @@ class RightsEngine:
             self._evaluate_aah,
             self._evaluate_aeeh,
             self._evaluate_apa,
+            self._evaluate_aspa,
             self._evaluate_invalidity,
             self._evaluate_legal_aid,
             self._evaluate_ajpa,
@@ -46,7 +49,7 @@ class RightsEngine:
                 results.append(result)
 
         return {
-            "engine_version": "0.2.0",
+            "engine_version": "0.3.0",
             "rules_version": self.dataset.get("version"),
             "rules_verified_at": self.dataset.get("verified_at"),
             "profile_id": profile.get("profile_id"),
@@ -59,8 +62,11 @@ class RightsEngine:
         status: str,
         reason: str,
         missing: List[str] | None = None,
+        human_required: bool | None = None,
     ) -> Dict[str, Any]:
         right = self.rights[right_id]
+        if human_required is None:
+            human_required = bool(right.get("human_evaluation_required", False))
         return {
             "right_id": right_id,
             "name": right.get("name"),
@@ -68,7 +74,7 @@ class RightsEngine:
             "reason": reason,
             "missing_information": missing or [],
             "sources": right.get("sources", []),
-            "human_evaluation_required": bool(right.get("human_evaluation_required", False)),
+            "human_evaluation_required": human_required,
         }
 
     def _evaluate_css(self, p: Dict[str, Any]) -> Dict[str, Any] | None:
@@ -88,6 +94,72 @@ class RightsEngine:
         if annual <= thresholds["contribution_annual"]:
             return self._result("css", "POTENTIEL_AVEC_PARTICIPATION", "Les ressources déclarées se situent entre les deux plafonds enregistrés dans le référentiel audité.")
         return self._result("css", "CONDITIONS_DECLAREES_INCOMPATIBLES", "Les ressources déclarées dépassent le plafond actuellement enregistré pour une personne seule en métropole.")
+
+    def _evaluate_rsa(self, p: Dict[str, Any]) -> Dict[str, Any] | None:
+        if "rsa" not in self.rights:
+            return None
+        age = p["person"].get("age")
+        stable = p["residence"].get("stable_residence")
+        if age is None:
+            return self._result("rsa", "INFORMATION_INSUFFISANTE", "L'âge est nécessaire avant d'orienter vers le RSA.", ["person.age"])
+        if age < 18:
+            return self._result("rsa", "CONDITIONS_DECLAREES_INCOMPATIBLES", "L'âge déclaré est inférieur à 18 ans.")
+        if stable is False:
+            return self._result("rsa", "CONDITIONS_DECLAREES_INCOMPATIBLES", "La résidence stable en France n'est pas déclarée.")
+        if stable is None:
+            return self._result("rsa", "INFORMATION_INSUFFISANTE", "La résidence stable en France doit être précisée.", ["residence.stable_residence"])
+
+        if age < 25:
+            has_child_or_pregnancy = bool(p["household"].get("dependent_children_count", 0)) or bool(p["household"].get("pregnancy"))
+            hours = p["employment"].get("hours_worked_last_3_years")
+            if has_child_or_pregnancy:
+                return self._result("rsa", "A_SIMULER", "La personne a moins de 25 ans mais déclare un enfant à charge ou une grossesse. Une simulation officielle est nécessaire pour examiner les autres conditions.")
+            if hours is not None and hours >= self.rights["rsa"]["rules"]["young_active_hours_last_3_years"]:
+                return self._result("rsa", "A_SIMULER", "Le volume de travail déclaré atteint le seuil jeune actif enregistré. Les autres conditions doivent être vérifiées par la simulation officielle.")
+            return self._result(
+                "rsa",
+                "A_SIMULER",
+                "Entre 18 et 24 ans, des conditions particulières s'appliquent. Le profil actuel ne permet pas d'écarter toutes les exceptions, donc une simulation officielle reste nécessaire.",
+                [] if hours is not None else ["employment.hours_worked_last_3_years"],
+            )
+
+        return self._result("rsa", "A_SIMULER", "L'âge et la résidence déclarés permettent d'orienter vers une simulation RSA. Le montant dépend de la composition et des ressources du foyer et n'est pas calculé ici.")
+
+    def _evaluate_prime_activite(self, p: Dict[str, Any]) -> Dict[str, Any] | None:
+        if "prime_activite" not in self.rights:
+            return None
+        employment = p["employment"]
+        person = p["person"]
+        activity_signal = (
+            employment.get("working") is True
+            or employment.get("partial_or_technical_unemployment") is True
+            or employment.get("status") in {"employee", "self_employed"}
+            or person.get("is_student") is True
+        )
+        if not activity_signal:
+            return None
+
+        age = person.get("age")
+        stable = p["residence"].get("stable_residence")
+        if age is None:
+            return self._result("prime_activite", "INFORMATION_INSUFFISANTE", "L'âge est nécessaire avant la simulation de prime d'activité.", ["person.age"])
+        if age < 18:
+            return self._result("prime_activite", "CONDITIONS_DECLAREES_INCOMPATIBLES", "La prime d'activité est ouverte à partir de 18 ans.")
+        if stable is False:
+            return self._result("prime_activite", "CONDITIONS_DECLAREES_INCOMPATIBLES", "La résidence stable en France n'est pas déclarée.")
+        if stable is None:
+            return self._result("prime_activite", "INFORMATION_INSUFFISANTE", "La résidence stable en France doit être précisée.", ["residence.stable_residence"])
+
+        if person.get("is_student") is True or employment.get("status") == "student":
+            gross = employment.get("monthly_gross_earned_income")
+            return self._result(
+                "prime_activite",
+                "A_SIMULER",
+                "Une activité étudiante ou assimilée est déclarée. Une règle de revenu spécifique s'applique et la simulation CAF doit vérifier l'ensemble de la situation.",
+                [] if gross is not None else ["employment.monthly_gross_earned_income"],
+            )
+
+        return self._result("prime_activite", "A_SIMULER", "Une activité professionnelle compatible est déclarée. Le montant dépend des ressources et de la composition du foyer, donc une simulation CAF est nécessaire.")
 
     def _evaluate_housing(self, p: Dict[str, Any]) -> Dict[str, Any] | None:
         if "apl_alf_als" not in self.rights:
@@ -158,6 +230,54 @@ class RightsEngine:
         if gir <= 4:
             return self._result("apa", "EVALUATION_HUMAINE_NECESSAIRE", "L'âge et le GIR déclarés sont compatibles avec les critères généraux enregistrés, mais l'attribution reste une décision administrative.")
         return self._result("apa", "CONDITIONS_DECLAREES_INCOMPATIBLES", "Le GIR déclaré est hors des niveaux 1 à 4 enregistrés pour l'ouverture de l'APA.")
+
+    def _evaluate_aspa(self, p: Dict[str, Any]) -> Dict[str, Any] | None:
+        if "aspa" not in self.rights:
+            return None
+        person = p["person"]
+        age = person.get("age")
+        retired = person.get("is_retired")
+
+        if age is None:
+            if retired is True:
+                return self._result("aspa", "INFORMATION_INSUFFISANTE", "L'âge est nécessaire pour l'orientation ASPA.", ["person.age"])
+            return None
+        if age < 62:
+            if retired is True:
+                return self._result("aspa", "CONDITIONS_DECLAREES_INCOMPATIBLES", "L'âge déclaré est inférieur au seuil minimal enregistré pour l'ASPA.")
+            return None
+        if retired is False:
+            return self._result("aspa", "CONDITIONS_DECLAREES_INCOMPATIBLES", "Le profil indique que la personne n'est pas retraitée.")
+        if retired is None:
+            return self._result("aspa", "INFORMATION_INSUFFISANTE", "Il faut savoir si la personne est retraitée.", ["person.is_retired"])
+
+        if 62 <= age < 65:
+            inaptitude = person.get("retirement_inaptitude_recognized")
+            incapacity = person.get("permanent_incapacity_percent")
+            if inaptitude is not True and (incapacity is None or incapacity < 50):
+                if inaptitude is False and incapacity is not None:
+                    return self._result("aspa", "CONDITIONS_DECLAREES_INCOMPATIBLES", "Entre 62 et 64 ans, le profil ne remplit pas la condition anticipée enregistrée d'inaptitude ou d'incapacité permanente d'au moins 50 %.")
+                return self._result(
+                    "aspa",
+                    "EVALUATION_HUMAINE_NECESSAIRE",
+                    "Entre 62 et 64 ans, l'ouverture anticipée dépend notamment d'une inaptitude reconnue ou d'une incapacité permanente d'au moins 50 %.",
+                    ["person.retirement_inaptitude_recognized", "person.permanent_incapacity_percent"],
+                    human_required=True,
+                )
+
+        all_pensions = person.get("all_retirement_pensions_liquidated")
+        if all_pensions is False:
+            return self._result("aspa", "CONDITIONS_DECLAREES_INCOMPATIBLES", "Toutes les retraites de base et complémentaires, françaises et étrangères, doivent avoir été demandées ou liquidées avant l'ASPA.")
+        if all_pensions is None:
+            return self._result("aspa", "INFORMATION_INSUFFISANTE", "Il faut vérifier que toutes les retraites ont été liquidées.", ["person.all_retirement_pensions_liquidated"])
+
+        stable = p["residence"].get("stable_residence")
+        if stable is False:
+            return self._result("aspa", "CONDITIONS_DECLAREES_INCOMPATIBLES", "La résidence en France n'est pas déclarée comme stable.")
+        if stable is None:
+            return self._result("aspa", "INFORMATION_INSUFFISANTE", "La résidence en France doit être précisée.", ["residence.stable_residence"])
+
+        return self._result("aspa", "A_SIMULER", "L'âge, la retraite et la résidence déclarés permettent d'explorer l'ASPA. Les ressources doivent être examinées selon les règles officielles et le moteur ne calcule pas le montant final.", human_required=False)
 
     def _evaluate_invalidity(self, p: Dict[str, Any]) -> Dict[str, Any] | None:
         if "pension_invalidite" not in self.rights:
