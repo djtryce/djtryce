@@ -1,4 +1,4 @@
-version: "1.2-audited"
+version: "1.3-audited"
 verified_at: "2026-09-07"
 status: "scaffold"
 methodology:
@@ -267,6 +267,95 @@ rights:
     sources:
       - "https://www.monparcourshandicap.gouv.fr/aides/lallocation-deducation-de-lenfant-handicape-aeeh-et-ses-complements"
 
+  ars:
+    name: "Allocation de rentrée scolaire"
+    status: "orientation_plus_simulation"
+    confidence:
+      child_age_and_schooling: A
+      resource_ceiling: A
+      amounts: A
+      exact_resource_assessment: B
+    rules:
+      campaign_year: 2026
+      general_minimum_age: 6
+      general_maximum_age: 18
+      younger_child_cp_exception: true
+      external_simulation_required: true
+      amounts_after_crds:
+        age_6_to_10: 426.87
+        age_11_to_14: 450.41
+        age_15_to_18: 466.02
+      full_rate_resource_ceiling:
+        one_child: 28956
+        two_children: 35638
+        three_children: 42320
+        four_children: 48583
+    human_evaluation_required: false
+    sources:
+      - "https://www.caf.fr/professionnels/offres-et-services/accompagnement-des-allocataires/bareme-allocation-de-rentree-scolaire"
+      - "https://www.caf.fr/allocataires/actualites/actualites-nationales/allocation-de-rentree-scolaire-ce-qu-il-faut-savoir"
+
+  asf:
+    name: "Allocation de soutien familial"
+    status: "orientation_only"
+    confidence:
+      family_situation: A
+      amounts: A
+      duration: A
+      legal_action_requirement_in_some_cases: A
+    rules:
+      valid_from: "2026-04-01"
+      valid_until: "2027-03-31"
+      monthly_amount_parent_raising_child_alone: 200.78
+      monthly_amount_child_collected_without_parent_support: 267.63
+      ends_at_child_twentieth_birthday_month: true
+      jaf_action_may_be_required_within_months: 4
+    human_evaluation_required: false
+    sources:
+      - "https://www.caf.fr/professionnels/offres-et-services/accompagnement-des-allocataires/l-allocation-de-soutien-familial-asf"
+      - "https://www.pension-alimentaire.caf.fr/usagers/aides-et-demarches/allocation-de-soutien-familial"
+
+  cheque_energie:
+    name: "Chèque énergie"
+    status: "orientation_plus_simulation"
+    confidence:
+      rfr_per_uc_threshold: A
+      uc_formula: A
+      amount_bands: A
+      automatic_identification: A
+      exact_fiscal_household_matching: B
+    rules:
+      campaign_year: 2026
+      external_simulation_required: true
+      rfr_per_uc_max_exclusive: 11000
+      uc_formula:
+        first_person: 1.0
+        second_person: 0.5
+        each_additional_person: 0.3
+      amounts:
+        one_uc:
+          rfr_uc_under_5700: 194
+          rfr_uc_5700_to_6799: 146
+          rfr_uc_6800_to_7849: 98
+          rfr_uc_7850_to_10999: 48
+        more_than_one_less_than_two_uc:
+          rfr_uc_under_5700: 240
+          rfr_uc_5700_to_6799: 176
+          rfr_uc_6800_to_7849: 113
+          rfr_uc_7850_to_10999: 63
+        two_uc_or_more:
+          rfr_uc_under_5700: 277
+          rfr_uc_5700_to_6799: 202
+          rfr_uc_6800_to_7849: 126
+          rfr_uc_7850_to_10999: 76
+      automatic_send_month: "2026-04"
+      request_open: "2026-04-01"
+      request_close: "2026-12-31"
+    human_evaluation_required: false
+    sources:
+      - "https://chequeenergie.gouv.fr/beneficiaire/faq"
+      - "https://chequeenergie.gouv.fr/beneficiaire/"
+
   fsl:
     name: "Fonds de solidarité pour le logement"
     status: "orientation_local_only"
@@ -285,7 +374,7 @@ rights:
       - "https://www.service-public.fr/particuliers/vosdroits/F38492"
 
 notes:
-  - "Ce fichier est volontairement incomplet : seules les règles déjà auditées ou des règles d'orientation prudentes sont présentes."
+  - "Le périmètre fonctionnel du MVP couvre désormais les 20 dispositifs prioritaires définis au lancement, APL/ALF/ALS étant traités ensemble par un même évaluateur."
+  - "Les règles de niveau B restent orientées vers des simulateurs ou instructions officielles."
   - "Les dispositifs restant non sourcés au niveau requis restent hors moteur."
   - "Le FSL exige une couche locale départementale avant toute conclusion sur l'ouverture ou le montant."
-  - "RSA, prime d'activité et ASPA sont orientés vers une simulation ou instruction officielle : le moteur ne calcule pas leur montant final."
