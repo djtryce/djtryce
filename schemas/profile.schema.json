@@ -2,23 +2,14 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/djtryce/djtryce/schemas/profile.schema.json",
   "title": "Profil utilisateur - Assistant d'accès aux droits",
-  "description": "Schéma minimal et versionné du profil utilisé par le moteur de règles. Les données réelles ne doivent pas être stockées dans le dépôt.",
+  "description": "Schéma versionné du profil utilisé par le moteur de règles. Les profils réels doivent rester hors du dépôt GitHub et être traités selon une politique de stockage dédiée.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "person", "household", "residence", "housing", "income", "employment", "health_disability", "family", "legal_admin", "existing_rights"],
   "properties": {
-    "schema_version": {
-      "type": "string",
-      "const": "1.0"
-    },
-    "profile_id": {
-      "type": ["string", "null"],
-      "description": "Identifiant pseudonyme optionnel. Ne jamais utiliser nom, prénom, NIR ou numéro allocataire."
-    },
-    "assessment_date": {
-      "type": ["string", "null"],
-      "format": "date"
-    },
+    "schema_version": {"type": "string", "const": "1.0"},
+    "profile_id": {"type": ["string", "null"], "description": "Identifiant pseudonyme optionnel. Ne jamais utiliser nom, prénom, NIR ou numéro allocataire."},
+    "assessment_date": {"type": ["string", "null"], "format": "date"},
     "person": {
       "type": "object",
       "additionalProperties": false,
@@ -38,10 +29,7 @@
       "additionalProperties": false,
       "required": ["marital_status", "household_size", "dependent_children_count"],
       "properties": {
-        "marital_status": {
-          "type": ["string", "null"],
-          "enum": ["single", "couple", "separated", "widowed", "unknown", null]
-        },
+        "marital_status": {"type": ["string", "null"], "enum": ["single", "couple", "separated", "widowed", "unknown", null]},
         "household_size": {"type": ["integer", "null"], "minimum": 1},
         "dependent_children_count": {"type": ["integer", "null"], "minimum": 0},
         "single_parent": {"type": ["boolean", "null"]},
@@ -54,18 +42,12 @@
       "required": ["country", "metropolitan_or_overseas", "stable_residence"],
       "properties": {
         "country": {"type": ["string", "null"]},
-        "metropolitan_or_overseas": {
-          "type": ["string", "null"],
-          "enum": ["metropolitan_france", "overseas", "unknown", null]
-        },
+        "metropolitan_or_overseas": {"type": ["string", "null"], "enum": ["metropolitan_france", "overseas", "unknown", null]},
         "department_code": {"type": ["string", "null"]},
         "postal_code": {"type": ["string", "null"]},
         "stable_residence": {"type": ["boolean", "null"]},
         "residence_duration_months": {"type": ["integer", "null"], "minimum": 0},
-        "nationality_status": {
-          "type": ["string", "null"],
-          "enum": ["french", "eu_eea_swiss", "non_eu", "stateless_or_refugee", "unknown", null]
-        },
+        "nationality_status": {"type": ["string", "null"], "enum": ["french", "eu_eea_swiss", "non_eu", "stateless_or_refugee", "unknown", null]},
         "valid_residence_permit": {"type": ["boolean", "null"]}
       }
     },
@@ -74,10 +56,7 @@
       "additionalProperties": false,
       "required": ["status", "monthly_rent_or_fee"],
       "properties": {
-        "status": {
-          "type": ["string", "null"],
-          "enum": ["tenant", "owner", "hosted_free", "social_residence", "homeless", "emergency_accommodation", "other", "unknown", null]
-        },
+        "status": {"type": ["string", "null"], "enum": ["tenant", "owner", "hosted_free", "social_residence", "homeless", "emergency_accommodation", "other", "unknown", null]},
         "monthly_rent_or_fee": {"type": ["number", "null"], "minimum": 0},
         "housing_aid_already_received": {"type": ["boolean", "null"]},
         "rent_arrears": {"type": ["boolean", "null"]},
@@ -105,10 +84,7 @@
       "additionalProperties": false,
       "required": ["status"],
       "properties": {
-        "status": {
-          "type": ["string", "null"],
-          "enum": ["employee", "self_employed", "unemployed", "inactive", "retired", "student", "sick_leave", "other", "unknown", null]
-        },
+        "status": {"type": ["string", "null"], "enum": ["employee", "self_employed", "unemployed", "inactive", "retired", "student", "sick_leave", "other", "unknown", null]},
         "working": {"type": ["boolean", "null"]},
         "partial_or_technical_unemployment": {"type": ["boolean", "null"]},
         "monthly_earned_income": {"type": ["number", "null"], "minimum": 0},
@@ -144,19 +120,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "children": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["age"],
-            "properties": {
-              "age": {"type": ["integer", "null"], "minimum": 0, "maximum": 30},
-              "in_school": {"type": ["boolean", "null"]},
-              "disability_or_health_difficulty": {"type": ["boolean", "null"]}
-            }
-          }
-        },
+        "children": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["age"], "properties": {"age": {"type": ["integer", "null"], "minimum": 0, "maximum": 30}, "in_school": {"type": ["boolean", "null"]}, "disability_or_health_difficulty": {"type": ["boolean", "null"]}}}},
         "unpaid_child_support": {"type": ["boolean", "null"]},
         "caregiver_for_relative": {"type": ["boolean", "null"]},
         "number_of_aided_persons_over_career": {"type": ["integer", "null"], "minimum": 0}
@@ -177,26 +141,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "rsa": {"type": ["boolean", "null"]},
-        "prime_activite": {"type": ["boolean", "null"]},
-        "apl": {"type": ["boolean", "null"]},
-        "alf": {"type": ["boolean", "null"]},
-        "als": {"type": ["boolean", "null"]},
-        "aah": {"type": ["boolean", "null"]},
-        "pch": {"type": ["boolean", "null"]},
-        "rqth": {"type": ["boolean", "null"]},
-        "cmi": {"type": ["boolean", "null"]},
-        "css": {"type": ["boolean", "null"]},
-        "pension_invalidite": {"type": ["boolean", "null"]},
-        "aspa": {"type": ["boolean", "null"]},
-        "apa": {"type": ["boolean", "null"]},
-        "fsl": {"type": ["boolean", "null"]},
-        "cheque_energie": {"type": ["boolean", "null"]},
-        "aide_juridictionnelle": {"type": ["boolean", "null"]},
-        "asf": {"type": ["boolean", "null"]},
-        "ars": {"type": ["boolean", "null"]},
-        "aeeh": {"type": ["boolean", "null"]},
-        "ajpa": {"type": ["boolean", "null"]}
+        "rsa": {"type": ["boolean", "null"]}, "prime_activite": {"type": ["boolean", "null"]}, "apl": {"type": ["boolean", "null"]}, "alf": {"type": ["boolean", "null"]}, "als": {"type": ["boolean", "null"]}, "aah": {"type": ["boolean", "null"]}, "pch": {"type": ["boolean", "null"]}, "rqth": {"type": ["boolean", "null"]}, "cmi": {"type": ["boolean", "null"]}, "css": {"type": ["boolean", "null"]}, "pension_invalidite": {"type": ["boolean", "null"]}, "aspa": {"type": ["boolean", "null"]}, "apa": {"type": ["boolean", "null"]}, "fsl": {"type": ["boolean", "null"]}, "cheque_energie": {"type": ["boolean", "null"]}, "aide_juridictionnelle": {"type": ["boolean", "null"]}, "asf": {"type": ["boolean", "null"]}, "ars": {"type": ["boolean", "null"]}, "aeeh": {"type": ["boolean", "null"]}, "ajpa": {"type": ["boolean", "null"]}
       }
     },
     "metadata": {
@@ -204,7 +149,8 @@
       "additionalProperties": false,
       "properties": {
         "source": {"type": ["string", "null"], "enum": ["questionnaire", "llm_extraction", "professional_entry", "test_fixture", "unknown", null]},
-        "contains_real_personal_data": {"type": "boolean", "const": false},
+        "contains_real_personal_data": {"type": ["boolean", "null"]},
+        "storage_policy": {"type": ["string", "null"], "enum": ["ephemeral_only", "test_fixture", "unknown", null]},
         "notes": {"type": ["string", "null"]}
       }
     }
