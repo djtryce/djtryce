@@ -1,4 +1,4 @@
-version: "1.1-audited"
+version: "1.2-audited"
 verified_at: "2026-09-07"
 status: "scaffold"
 methodology:
@@ -36,6 +36,72 @@ rights:
       - "https://www.ameli.fr/assure/droits-demarches/difficultes-acces-droits-soins/complementaire-sante/complementaire-sante-beneficiaires"
       - "https://www.ameli.fr/assure/droits-demarches/difficultes-acces-droits-soins/complementaire-sante/complementaire-sante-solidaire-demande"
 
+  rsa:
+    name: "Revenu de solidarité active"
+    status: "orientation_plus_simulation"
+    confidence:
+      minimum_age_general: A
+      young_parent_exception: A
+      young_active_work_history: A
+      residence: A
+      resource_calculation: B
+      exact_amount: B
+    rules:
+      minimum_age_general: 25
+      minimum_age_young_active: 18
+      young_active_hours_last_3_years: 3214
+      young_parent_exception: true
+      residence_principal_in_france_required: true
+      external_simulation_required: true
+      metropolitan_amounts_valid_from: "2026-04-01"
+      metropolitan_amounts_valid_until: "2027-03-31"
+      metropolitan_base_amounts:
+        single_no_child: 651.69
+        couple_no_child: 977.54
+        single_one_child: 977.54
+        couple_one_child: 1173.05
+        single_two_children: 1173.05
+        couple_two_children: 1368.56
+        additional_person: 260.68
+      housing_forfait:
+        one_person: 78.20
+        two_persons: 156.41
+        three_or_more: 193.55
+    human_evaluation_required: false
+    sources:
+      - "https://www.caf.fr/allocataires/foire-aux-questions/vie-professionnelle"
+      - "https://www.caf.fr/allocataires/caf-des-bouches-du-rhone/offre-de-service/vie-professionnelle/le-revenu-de-solidarite-active-rsa"
+
+  prime_activite:
+    name: "Prime d'activité"
+    status: "orientation_plus_simulation"
+    confidence:
+      minimum_age: A
+      professional_activity: A
+      residence: A
+      nationality_or_residence_status: A
+      student_apprentice_special_rule: A
+      exact_amount: B
+    rules:
+      minimum_age: 18
+      professional_activity_required: true
+      partial_or_technical_unemployment_accepted: true
+      residence_principal_in_france_required: true
+      external_simulation_required: true
+      student_apprentice_monthly_gross_income_minimum: 1082.87
+      metropolitan_amounts_valid_from: "2026-04-01"
+      base_amount_one_person: 638.28
+      housing_forfait_one_person: 76.59
+      maximum_individual_bonus_from: "2026-01-01"
+      maximum_individual_bonus: 240.63
+      no_bonus_below_monthly_activity_income: 709.18
+      maximum_bonus_from_monthly_activity_income: 1658.76
+    human_evaluation_required: false
+    sources:
+      - "https://www.caf.fr/allocataires/foire-aux-questions/vie-professionnelle?field_prestation_target_id=850"
+      - "https://www.caf.fr/professionnels/offres-et-services/accompagnement-des-allocataires/bareme-prime-d-activite"
+      - "https://www.service-public.fr/particuliers/vosdroits/N31477"
+
   pension_invalidite:
     name: "Pension d'invalidité"
     status: "audited_partial"
@@ -49,6 +115,40 @@ rights:
     human_evaluation_required: true
     sources:
       - "https://www.ameli.fr/assure/droits-demarches/invalidite-handicap/invalidite/pension-invalidite-definition-conditions"
+
+  aspa:
+    name: "Allocation de solidarité aux personnes âgées"
+    status: "orientation_plus_simulation"
+    confidence:
+      standard_age: A
+      early_age_exception: H
+      all_pensions_liquidated: A
+      residence: A
+      resource_ceiling: A
+      resource_calculation: B
+      effective_date: A
+    rules:
+      standard_minimum_age: 65
+      early_minimum_age: 62
+      early_age_conditions:
+        retirement_inaptitude_recognized: true
+        permanent_incapacity_percent_minimum: 50
+      all_retirement_pensions_must_be_liquidated: true
+      residence_in_france_months_per_year_minimum: 9
+      external_simulation_required: true
+      resource_ceiling_valid_from: "2026-01-01"
+      annual_resource_ceiling:
+        single: 12523.14
+        couple: 19442.21
+      monthly_resource_ceiling:
+        single: 1043.59
+        couple: 1620.18
+      effective_date: "premier jour du mois suivant le dépôt de la demande"
+      automatic: false
+    human_evaluation_required: false
+    sources:
+      - "https://www.lassuranceretraite.fr/portail-info/hors-menu/annexe/services-en-ligne/demander-une-aspa.html"
+      - "https://legislation.lassuranceretraite.fr/Pdf/circulaire_cnav_2025_29_22122025.pdf"
 
   pch:
     name: "Prestation de compensation du handicap"
@@ -188,3 +288,4 @@ notes:
   - "Ce fichier est volontairement incomplet : seules les règles déjà auditées ou des règles d'orientation prudentes sont présentes."
   - "Les dispositifs restant non sourcés au niveau requis restent hors moteur."
   - "Le FSL exige une couche locale départementale avant toute conclusion sur l'ouverture ou le montant."
+  - "RSA, prime d'activité et ASPA sont orientés vers une simulation ou instruction officielle : le moteur ne calcule pas leur montant final."
