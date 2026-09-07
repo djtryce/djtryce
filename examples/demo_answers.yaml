@@ -1,0 +1,25 @@
+version: "1.0"
+description: "Scénario entièrement fictif pour tester la chaîne questionnaire -> profil -> moteur -> rapport."
+answers:
+  age: 42
+  marital_status: single
+  child_ages: []
+  pregnancy: false
+  stable_residence: true
+  department_code: "31"
+  nationality_status: french
+  housing_status: tenant
+  monthly_rent: 650
+  rent_arrears: true
+  energy_debt: false
+  resources_known: true
+  annual_resources: 10800
+  monthly_resources: 900
+  rfr: 9000
+  employment_status: employee
+  working: true
+  monthly_earned_income: 1100
+  health_difficulty: false
+  caregiver: false
+  legal_proceeding: false
+  existing_rights: []
