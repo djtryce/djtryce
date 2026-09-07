@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/djtryce/djtryce/schemas/profile.schema.json",
+  "title": "Profil utilisateur - Assistant d'accès aux droits",
+  "description": "Schéma minimal et versionné du profil utilisé par le moteur de règles. Les données réelles ne doivent pas être stockées dans le dépôt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "person", "household", "residence", "housing", "income", "employment", "health_disability", "family", "legal_admin", "existing_rights"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "profile_id": {
+      "type": ["string", "null"],
+      "description": "Identifiant pseudonyme optionnel. Ne jamais utiliser nom, prénom, NIR ou numéro allocataire."
+    },
+    "assessment_date": {
+      "type": ["string", "null"],
+      "format": "date"
+    },
+    "person": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["age", "date_of_birth_known"],
+      "properties": {
+        "age": {"type": ["integer", "null"], "minimum": 0, "maximum": 130},
+        "date_of_birth_known": {"type": ["boolean", "null"]},
+        "is_student": {"type": ["boolean", "null"]},
+        "is_retired": {"type": ["boolean", "null"]}
+      }
+    },
+    "household": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["marital_status", "household_size", "dependent_children_count"],
+      "properties": {
+        "marital_status": {
+          "type": ["string", "null"],
+          "enum": ["single", "couple", "separated", "widowed", "unknown", null]
+        },
+        "household_size": {"type": ["integer", "null"], "minimum": 1},
+        "dependent_children_count": {"type": ["integer", "null"], "minimum": 0},
+        "single_parent": {"type": ["boolean", "null"]},
+        "pregnancy": {"type": ["boolean", "null"]}
+      }
+    },
+    "residence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["country", "metropolitan_or_overseas", "stable_residence"],
+      "properties": {
+        "country": {"type": ["string", "null"]},
+        "metropolitan_or_overseas": {
+          "type": ["string", "null"],
+          "enum": ["metropolitan_france", "overseas", "unknown", null]
+        },
+        "department_code": {"type": ["string", "null"]},
+        "postal_code": {"type": ["string", "null"]},
+        "stable_residence": {"type": ["boolean", "null"]},
+        "residence_duration_months": {"type": ["integer", "null"], "minimum": 0},
+        "nationality_status": {
+          "type": ["string", "null"],
+          "enum": ["french", "eu_eea_swiss", "non_eu", "stateless_or_refugee", "unknown", null]
+        },
+        "valid_residence_permit": {"type": ["boolean", "null"]}
+      }
+    },
+    "housing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "monthly_rent_or_fee"],
+      "properties": {
+        "status": {
+          "type": ["string", "null"],
+          "enum": ["tenant", "owner", "hosted_free", "social_residence", "homeless", "emergency_accommodation", "other", "unknown", null]
+        },
+        "monthly_rent_or_fee": {"type": ["number", "null"], "minimum": 0},
+        "housing_aid_already_received": {"type": ["boolean", "null"]},
+        "rent_arrears": {"type": ["boolean", "null"]},
+        "energy_debt": {"type": ["boolean", "null"]},
+        "housing_convention_known": {"type": ["boolean", "null"]}
+      }
+    },
+    "income": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resources_known"],
+      "properties": {
+        "resources_known": {"type": ["boolean", "null"]},
+        "monthly_household_resources": {"type": ["number", "null"], "minimum": 0},
+        "annual_household_resources": {"type": ["number", "null"], "minimum": 0},
+        "reference_tax_income": {"type": ["number", "null"], "minimum": 0},
+        "movable_assets": {"type": ["number", "null"], "minimum": 0},
+        "real_estate_assets_excluding_main_home": {"type": ["number", "null"], "minimum": 0},
+        "resource_period_start": {"type": ["string", "null"], "format": "date"},
+        "resource_period_end": {"type": ["string", "null"], "format": "date"}
+      }
+    },
+    "employment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "type": ["string", "null"],
+          "enum": ["employee", "self_employed", "unemployed", "inactive", "retired", "student", "sick_leave", "other", "unknown", null]
+        },
+        "working": {"type": ["boolean", "null"]},
+        "monthly_earned_income": {"type": ["number", "null"], "minimum": 0},
+        "registered_france_travail": {"type": ["boolean", "null"]},
+        "work_limitation_due_to_health_or_disability": {"type": ["boolean", "null"]},
+        "insurance_affiliation_months": {"type": ["integer", "null"], "minimum": 0},
+        "hours_worked_last_12_months": {"type": ["number", "null"], "minimum": 0}
+      }
+    },
+    "health_disability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["health_or_disability_difficulty"],
+      "properties": {
+        "health_or_disability_difficulty": {"type": ["boolean", "null"]},
+        "difficulty_expected_duration_months": {"type": ["integer", "null"], "minimum": 0},
+        "difficulty_absolute_count": {"type": ["integer", "null"], "minimum": 0},
+        "difficulty_severe_count": {"type": ["integer", "null"], "minimum": 0},
+        "mobility_difficulty": {"type": ["boolean", "null"]},
+        "daily_living_difficulty": {"type": ["boolean", "null"]},
+        "needs_human_assistance": {"type": ["boolean", "null"]},
+        "mdph_file_exists": {"type": ["boolean", "null"]},
+        "mdph_decision_exists": {"type": ["boolean", "null"]},
+        "disability_rate_percent": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
+        "gir_level": {"type": ["integer", "null"], "minimum": 1, "maximum": 6},
+        "medical_capacity_loss_two_thirds_assessed": {"type": ["boolean", "null"]},
+        "requires_third_person_assistance": {"type": ["boolean", "null"]}
+      }
+    },
+    "family": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "children": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["age"],
+            "properties": {
+              "age": {"type": ["integer", "null"], "minimum": 0, "maximum": 30},
+              "in_school": {"type": ["boolean", "null"]},
+              "disability_or_health_difficulty": {"type": ["boolean", "null"]}
+            }
+          }
+        },
+        "unpaid_child_support": {"type": ["boolean", "null"]},
+        "caregiver_for_relative": {"type": ["boolean", "null"]},
+        "number_of_aided_persons_over_career": {"type": ["integer", "null"], "minimum": 0}
+      }
+    },
+    "legal_admin": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "legal_proceeding": {"type": ["boolean", "null"]},
+        "urgent_legal_situation": {"type": ["boolean", "null"]},
+        "recent_administrative_refusal": {"type": ["boolean", "null"]},
+        "decision_date": {"type": ["string", "null"], "format": "date"},
+        "appeal_deadline_known": {"type": ["boolean", "null"]}
+      }
+    },
+    "existing_rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rsa": {"type": ["boolean", "null"]},
+        "prime_activite": {"type": ["boolean", "null"]},
+        "apl": {"type": ["boolean", "null"]},
+        "alf": {"type": ["boolean", "null"]},
+        "als": {"type": ["boolean", "null"]},
+        "aah": {"type": ["boolean", "null"]},
+        "pch": {"type": ["boolean", "null"]},
+        "rqth": {"type": ["boolean", "null"]},
+        "cmi": {"type": ["boolean", "null"]},
+        "css": {"type": ["boolean", "null"]},
+        "pension_invalidite": {"type": ["boolean", "null"]},
+        "aspa": {"type": ["boolean", "null"]},
+        "apa": {"type": ["boolean", "null"]},
+        "fsl": {"type": ["boolean", "null"]},
+        "cheque_energie": {"type": ["boolean", "null"]},
+        "aide_juridictionnelle": {"type": ["boolean", "null"]},
+        "asf": {"type": ["boolean", "null"]},
+        "ars": {"type": ["boolean", "null"]},
+        "aeeh": {"type": ["boolean", "null"]},
+        "ajpa": {"type": ["boolean", "null"]}
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": {"type": ["string", "null"], "enum": ["questionnaire", "llm_extraction", "professional_entry", "test_fixture", "unknown", null]},
+        "contains_real_personal_data": {"type": "boolean", "const": false},
+        "notes": {"type": ["string", "null"]}
+      }
+    }
+  }
+}
