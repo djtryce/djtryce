@@ -1,0 +1,186 @@
+version: "1.0"
+base_profile: "examples/profile_test_01.json"
+notes:
+  - "Chaque cas part du profil fictif de base et applique uniquement les mutations listées."
+  - "Ces scénarios testent le comportement du moteur, pas l'attribution réelle d'un droit."
+
+cases:
+  - id: css_free_below
+    description: "Personne seule sous le plafond C2S gratuite"
+    set:
+      income.annual_household_resources: 9000
+    expect:
+      css: POTENTIEL
+
+  - id: css_free_exact
+    description: "Personne seule exactement au plafond C2S gratuite"
+    set:
+      income.annual_household_resources: 10421
+    expect:
+      css: POTENTIEL
+
+  - id: css_contribution_first_euro
+    description: "Premier euro au-dessus du plafond gratuit"
+    set:
+      income.annual_household_resources: 10422
+    expect:
+      css: POTENTIEL_AVEC_PARTICIPATION
+
+  - id: css_contribution_exact
+    description: "Exactement au plafond C2S avec participation"
+    set:
+      income.annual_household_resources: 14069
+    expect:
+      css: POTENTIEL_AVEC_PARTICIPATION
+
+  - id: css_above
+    description: "Un euro au-dessus du plafond C2S avec participation"
+    set:
+      income.annual_household_resources: 14070
+    expect:
+      css: CONDITIONS_DECLAREES_INCOMPATIBLES
+
+  - id: css_unknown_resources
+    description: "Ressources inconnues"
+    set:
+      income.annual_household_resources: null
+    expect:
+      css: INFORMATION_INSUFFISANTE
+
+  - id: css_non_single_household
+    description: "Foyer de deux personnes, barème non encore sécurisé dans le prototype"
+    set:
+      household.household_size: 2
+    expect:
+      css: INFORMATION_INSUFFISANTE
+
+  - id: housing_tenant
+    description: "Locataire"
+    set:
+      housing.status: tenant
+    expect:
+      apl_alf_als: A_SIMULER
+
+  - id: housing_social_residence
+    description: "Résidence sociale"
+    set:
+      housing.status: social_residence
+    expect:
+      apl_alf_als: A_SIMULER
+
+  - id: housing_unknown
+    description: "Statut logement inconnu"
+    set:
+      housing.status: unknown
+    expect:
+      apl_alf_als: INFORMATION_INSUFFISANTE
+
+  - id: apa_age_59
+    description: "59 ans"
+    set:
+      person.age: 59
+    expect:
+      apa: CONDITIONS_DECLAREES_INCOMPATIBLES
+
+  - id: apa_age_60_no_gir
+    description: "60 ans sans GIR connu"
+    set:
+      person.age: 60
+      health_disability.gir_level: null
+    expect:
+      apa: EVALUATION_HUMAINE_NECESSAIRE
+
+  - id: apa_gir_1
+    description: "72 ans, GIR 1"
+    set:
+      person.age: 72
+      health_disability.gir_level: 1
+    expect:
+      apa: EVALUATION_HUMAINE_NECESSAIRE
+
+  - id: apa_gir_4
+    description: "72 ans, GIR 4"
+    set:
+      person.age: 72
+      health_disability.gir_level: 4
+    expect:
+      apa: EVALUATION_HUMAINE_NECESSAIRE
+
+  - id: apa_gir_5
+    description: "72 ans, GIR 5"
+    set:
+      person.age: 72
+      health_disability.gir_level: 5
+    expect:
+      apa: CONDITIONS_DECLAREES_INCOMPATIBLES
+
+  - id: disability_pch_signal
+    description: "Difficultés de santé ou handicap déclarées"
+    set:
+      health_disability.health_or_disability_difficulty: true
+    expect:
+      pch: A_EXPLORER
+
+  - id: disability_rqth_signal
+    description: "Limitation de travail déclarée"
+    set:
+      employment.work_limitation_due_to_health_or_disability: true
+    expect:
+      rqth: EVALUATION_HUMAINE_NECESSAIRE
+
+  - id: disability_cmi_signal
+    description: "Difficulté de mobilité déclarée"
+    set:
+      health_disability.mobility_difficulty: true
+    expect:
+      cmi: EVALUATION_HUMAINE_NECESSAIRE
+
+  - id: invalidity_not_assessed
+    description: "Difficulté de santé mais perte de capacité non évaluée"
+    set:
+      health_disability.health_or_disability_difficulty: true
+      health_disability.medical_capacity_loss_two_thirds_assessed: null
+    expect:
+      pension_invalidite: EVALUATION_HUMAINE_NECESSAIRE
+
+  - id: invalidity_assessed
+    description: "Perte de capacité des deux tiers déclarée comme déjà évaluée"
+    set:
+      health_disability.health_or_disability_difficulty: true
+      health_disability.medical_capacity_loss_two_thirds_assessed: true
+    expect:
+      pension_invalidite: A_EXPLORER
+
+  - id: legal_aid_procedure
+    description: "Procédure judiciaire en cours"
+    set:
+      legal_admin.legal_proceeding: true
+    expect:
+      aide_juridictionnelle: A_SIMULER
+
+  - id: legal_aid_missing_rfr
+    description: "Procédure judiciaire avec RFR inconnu"
+    set:
+      legal_admin.legal_proceeding: true
+      income.reference_tax_income: null
+    expect:
+      aide_juridictionnelle: INFORMATION_INSUFFISANTE
+
+  - id: caregiver_ajpa
+    description: "Aidant d'un proche"
+    set:
+      family.caregiver_for_relative: true
+    expect:
+      ajpa: A_EXPLORER
+
+  - id: no_disability_signals
+    description: "Aucun signal handicap ou santé"
+    set:
+      health_disability.health_or_disability_difficulty: false
+      health_disability.mobility_difficulty: false
+      employment.work_limitation_due_to_health_or_disability: false
+    absent:
+      - pch
+      - rqth
+      - cmi
+      - pension_invalidite
