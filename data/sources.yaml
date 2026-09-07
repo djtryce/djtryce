@@ -1,4 +1,4 @@
-version: "1.0"
+version: "1.1"
 updated_at: "2026-09-07"
 policy:
   primary_sources_required_for:
@@ -48,4 +48,32 @@ sources:
   aj_justice:
     authority: "Justice.fr"
     url: "https://www.justice.fr/fiche/aide-juridictionnelle-dune-procedure-france"
+    last_checked: "2026-09-07"
+  rsa_caf_conditions:
+    authority: "Caisse nationale des allocations familiales"
+    url: "https://www.caf.fr/allocataires/foire-aux-questions/vie-professionnelle"
+    last_checked: "2026-09-07"
+  rsa_caf_bareme_2026:
+    authority: "Caisse d'Allocations Familiales"
+    url: "https://www.caf.fr/allocataires/caf-des-bouches-du-rhone/offre-de-service/vie-professionnelle/le-revenu-de-solidarite-active-rsa"
+    last_checked: "2026-09-07"
+  ppa_caf_conditions:
+    authority: "Caisse nationale des allocations familiales"
+    url: "https://www.caf.fr/allocataires/foire-aux-questions/vie-professionnelle?field_prestation_target_id=850"
+    last_checked: "2026-09-07"
+  ppa_caf_bareme_2026:
+    authority: "Caisse nationale des allocations familiales"
+    url: "https://www.caf.fr/professionnels/offres-et-services/accompagnement-des-allocataires/bareme-prime-d-activite"
+    last_checked: "2026-09-07"
+  ppa_service_public:
+    authority: "Service-Public.fr"
+    url: "https://www.service-public.fr/particuliers/vosdroits/N31477"
+    last_checked: "2026-09-07"
+  aspa_assurance_retraite:
+    authority: "L'Assurance retraite"
+    url: "https://www.lassuranceretraite.fr/portail-info/hors-menu/annexe/services-en-ligne/demander-une-aspa.html"
+    last_checked: "2026-09-07"
+  aspa_cnav_bareme_2026:
+    authority: "Cnav - L'Assurance retraite"
+    url: "https://legislation.lassuranceretraite.fr/Pdf/circulaire_cnav_2025_29_22122025.pdf"
     last_checked: "2026-09-07"
