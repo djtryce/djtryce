@@ -1,3 +1,4 @@
+import random
 import streamlit as st
 from datetime import date, timedelta
 from statistics import mean
@@ -24,6 +25,15 @@ st.markdown(
         padding: 16px;
         margin: 12px 0;
     }
+    .nimp-card {
+        border: 2px dashed rgba(128,128,128,.38);
+        border-radius: 18px;
+        padding: 20px;
+        margin: 14px 0;
+        text-align: center;
+    }
+    .nimp-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; }
+    .nimp-points { font-size: 1.1rem; font-weight: 700; }
     .block-container { padding-top: 2rem; padding-bottom: 4rem; }
     </style>
     """,
@@ -38,8 +48,117 @@ MOODS = {
     5: "Très bien",
 }
 
+NIMP_CARDS = [
+    {
+        "title": "Le bouton parfaitement inutile",
+        "prompt": "Un bouton clignote. Il ne sert strictement à rien. Tu fais quoi ?",
+        "choices": [
+            "Je clique immédiatement.",
+            "J'attends de voir si quelque chose se passe.",
+            "Je l'ignore et je continue.",
+        ],
+        "debrief": "Le cerveau adore les signaux saillants et les promesses de récompense. Le but ici n'est pas de trouver la 'bonne' réponse, mais de remarquer ton premier réflexe.",
+    },
+    {
+        "title": "+3 points de rien du tout",
+        "prompt": "L'appli t'annonce : '+3 points de rien du tout'. Quelle est ta réaction ?",
+        "choices": [
+            "Je veux savoir comment en gagner encore.",
+            "Ça me fait rire, mais je continue quand même.",
+            "Je me demande pourquoi ce score m'intéresse.",
+        ],
+        "debrief": "Un score peut suffire à créer une boucle d'engagement, même quand il ne représente aucune valeur réelle. Observer ce petit crochet mental, c'est déjà prendre du recul.",
+    },
+    {
+        "title": "La banane invisible",
+        "prompt": "Mission : attrape la banane invisible en moins de 5 secondes.",
+        "choices": [
+            "Je tente frénétiquement.",
+            "Je cherche la règle cachée.",
+            "Je refuse cette mission profondément douteuse.",
+        ],
+        "debrief": "Quand une consigne est absurde mais urgente, l'urgence peut passer devant la réflexion. C'est exactement ce que NIMP veut rendre visible.",
+    },
+    {
+        "title": "Les chaussettes rebelles",
+        "prompt": "Range les chaussettes par couleur. Problème : elles changent de couleur dès que tu les touches.",
+        "choices": [
+            "Je recommence jusqu'à réussir.",
+            "Je m'énerve un peu, mais je continue.",
+            "Je remarque que la tâche est impossible et j'arrête.",
+        ],
+        "debrief": "Certaines interfaces exploitent la frustration pour prolonger l'engagement. Ici, on regarde simplement à quel moment tu décides que 'ça suffit'.",
+    },
+    {
+        "title": "Cornichon turbo",
+        "prompt": "Ton cornichon virtuel court vers un mur. Tu n'as qu'un bouton : 'PLUS VITE'.",
+        "choices": [
+            "PLUS VITE, évidemment.",
+            "Je cherche un autre bouton.",
+            "Je laisse le cornichon assumer ses choix.",
+        ],
+        "debrief": "Un choix unique présenté comme une action peut donner une illusion de contrôle. NIMP joue avec cette sensation pour qu'on puisse en parler ensuite.",
+    },
+    {
+        "title": "Badge très rare : Presque rien",
+        "prompt": "Tu débloques un badge 'Presque rien' avec une animation spectaculaire.",
+        "choices": [
+            "Je suis quand même un peu fier.",
+            "Je veux voir le badge suivant.",
+            "Je ris du décalage entre l'animation et la récompense.",
+        ],
+        "debrief": "Les effets visuels, sons et badges amplifient la valeur perçue d'une récompense. Ce décalage entre forme et contenu est au cœur de la mécanique parodique de NIMP.",
+    },
+    {
+        "title": "Encore une dernière",
+        "prompt": "L'appli te propose une dernière partie. Puis une autre. Puis une 'vraie dernière'.",
+        "choices": [
+            "Je fais la vraie dernière.",
+            "Je remarque le piège, mais je continue un peu.",
+            "J'arrête dès la première proposition.",
+        ],
+        "debrief": "Les boucles sans fin réduisent les moments naturels d'arrêt. Le point intéressant est de repérer ce qui t'aide à fermer la boucle.",
+    },
+    {
+        "title": "Notification cosmique",
+        "prompt": "Message urgent : 'TON ÉPONGE A BESOIN DE TOI'.",
+        "choices": [
+            "Je vérifie immédiatement.",
+            "Je souris et j'ouvre quand même.",
+            "Je classe mentalement l'éponge en non-urgence.",
+        ],
+        "debrief": "Une notification transforme facilement une information banale en priorité. NIMP exagère ce mécanisme pour le rendre visible.",
+    },
+    {
+        "title": "Le coffre mystère",
+        "prompt": "Tu peux ouvrir un coffre gratuit maintenant, ou attendre 10 minutes pour un coffre 'méga'.",
+        "choices": [
+            "J'ouvre maintenant.",
+            "J'attends le méga coffre.",
+            "Je me demande pourquoi j'attends quelque chose qui n'existe pas.",
+        ],
+        "debrief": "Attente, rareté et récompense différée peuvent maintenir l'attention. Ici, aucun choix n'est jugé : on observe juste la mécanique.",
+    },
+    {
+        "title": "Combo éponges x12",
+        "prompt": "Tu viens d'éviter 12 éponges volantes. Le jeu crie 'COMBO LÉGENDAIRE !'.",
+        "choices": [
+            "Je veux battre mon record.",
+            "Je profite du moment puis je m'arrête.",
+            "Je réalise que je viens d'investir beaucoup d'énergie dans des éponges.",
+        ],
+        "debrief": "Le combo transforme une série d'actions simples en performance. C'est un moteur classique de répétition et d'engagement.",
+    },
+]
+
 if "entries" not in st.session_state:
     st.session_state.entries = []
+if "nimp_index" not in st.session_state:
+    st.session_state.nimp_index = random.randrange(len(NIMP_CARDS))
+if "nimp_answer" not in st.session_state:
+    st.session_state.nimp_answer = None
+if "nimp_rounds" not in st.session_state:
+    st.session_state.nimp_rounds = 0
 
 
 def save_entry(entry):
@@ -65,14 +184,22 @@ def load_demo_week():
     st.session_state.entries = demo[::-1]
 
 
+def next_nimp_card():
+    previous = st.session_state.nimp_index
+    choices = [i for i in range(len(NIMP_CARDS)) if i != previous]
+    st.session_state.nimp_index = random.choice(choices)
+    st.session_state.nimp_answer = None
+    st.session_state.nimp_rounds += 1
+
+
 st.title("#TILT! 💡")
-st.caption("Prototype test V0.1 - pair-aidance, émotions et réduction des risques")
+st.caption("Prototype test V0.2 - pair-aidance, émotions, réduction des risques et NIMP")
 
 with st.sidebar:
     st.markdown("### Navigation")
     page = st.radio(
         "Aller à",
-        ["Aujourd'hui", "Journal", "Outils & Ressources", "À propos"],
+        ["Aujourd'hui", "Journal", "Outils & Ressources", "NIMP 🎮", "À propos"],
         label_visibility="collapsed",
     )
     st.divider()
@@ -201,17 +328,74 @@ elif page == "Outils & Ressources":
     )
     st.caption("Coordonnées vérifiées le 7 septembre 2026 sur les sites officiels du ministère de la Santé et de Drogues Info Service.")
 
+elif page == "NIMP 🎮":
+    st.subheader("NIMP 🎮")
+    st.caption("Un mini-jeu volontairement absurde pour observer ce qui capte l'attention, déclenche un réflexe ou donne envie de continuer.")
+
+    card = NIMP_CARDS[st.session_state.nimp_index]
+    st.markdown(
+        f"""
+        <div class="nimp-card">
+          <div class="tilt-kicker">CARTE NIMP #{st.session_state.nimp_index + 1}</div>
+          <div class="nimp-title">{card['title']}</div>
+          <div>{card['prompt']}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    answer = st.radio(
+        "Ton premier réflexe ?",
+        card["choices"],
+        index=None,
+        key=f"nimp_choice_{st.session_state.nimp_index}_{st.session_state.nimp_rounds}",
+    )
+
+    if answer is not None:
+        st.session_state.nimp_answer = answer
+        st.success(f"Réponse choisie : {answer}")
+        st.markdown("#### Mini-débrief")
+        st.write(card["debrief"])
+        st.caption("Il n'y a pas de bonne ou de mauvaise réponse. NIMP sert à rendre visibles des réflexes d'attention, d'impulsivité, de frustration ou de recherche de récompense.")
+
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button("Nouvelle carte", type="primary", use_container_width=True):
+            next_nimp_card()
+            st.rerun()
+    with c2:
+        if st.button("Carte au hasard", use_container_width=True):
+            next_nimp_card()
+            st.rerun()
+
+    with st.expander("À quoi sert NIMP dans #TILT! ?"):
+        st.markdown(
+            """
+            NIMP est une **parodie des mécaniques d'engagement** : urgence artificielle, scores inutiles, récompenses, combos, frustration, notifications et envie de faire "encore une dernière".
+
+            L'objectif n'est pas de mesurer ou diagnostiquer quoi que ce soit. On joue quelques secondes, puis on met des mots sur ce qui s'est passé :
+
+            - Est-ce que j'ai cliqué sans réfléchir ?
+            - Est-ce que j'ai voulu finir une tâche absurde ?
+            - Est-ce qu'un score inutile m'a quand même accroché ?
+            - À quel moment ai-je eu envie d'arrêter ?
+
+            En atelier, ces réactions peuvent devenir un point de départ pour parler d'attention, d'impulsivité, de récompense et de comportements automatiques.
+            """
+        )
+
 elif page == "À propos":
     st.subheader("À propos de cette version")
     st.markdown(
         """
-        **#TILT! V0.1** est une maquette fonctionnelle destinée à tester l'idée, pas un dispositif médical.
+        **#TILT! V0.2** est une maquette fonctionnelle destinée à tester l'idée, pas un dispositif médical.
 
-        Cette première version cherche seulement à répondre à trois questions :
+        Cette version cherche à répondre à quatre questions :
 
         1. Est-ce que la saisie quotidienne est assez simple pour être utilisée réellement ?
         2. Est-ce que le journal aide à relire sa semaine sans noyer l'utilisateur dans les chiffres ?
         3. Est-ce que les outils courts sont accessibles au bon moment ?
+        4. Est-ce que NIMP permet d'ouvrir une discussion utile sur l'attention, l'impulsivité et les mécaniques de récompense ?
 
         Ce qui n'est volontairement **pas** dans cette version : communauté, chat, mentor pair-aidant, espace professionnel, notifications intelligentes, compte utilisateur et synchronisation cloud.
         """
