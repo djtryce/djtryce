@@ -13,9 +13,11 @@ Projet de référentiel et moteur d’orientation pour aider les personnes en Fr
 
 ## État du projet
 
-Phase actuelle : audit et fiabilisation du référentiel MVP avant développement.
+Le MVP de démonstration fonctionne de bout en bout :
 
-Le premier moteur doit couvrir environ 20 dispositifs prioritaires, avec un référentiel passif plus large à terme.
+`questionnaire -> profile.json -> moteur de règles -> résultats expliqués et sourcés`
+
+Le périmètre couvre environ 20 dispositifs prioritaires. Certaines règles restent volontairement en orientation, simulation externe ou évaluation humaine.
 
 ## Classification des règles
 
@@ -24,6 +26,44 @@ Le premier moteur doit couvrir environ 20 dispositifs prioritaires, avec un réf
 - **H** : règle vérifiée mais nécessitant une appréciation humaine ou administrative
 - **C** : information insuffisamment sécurisée
 
-## Prochain jalon
+## Lancer la démonstration fictive
 
-Construire `droits_mvp_v1-audited` avec provenance de chaque règle, date de vérification, version, tests et séparation entre ouverture du droit, calcul, décision, versement, renouvellement et recours.
+Installer les dépendances :
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+Puis lancer le scénario fictif fourni dans le dépôt :
+
+```bash
+python -m src.demo --answers examples/demo_answers.yaml
+```
+
+Le programme affiche une orientation lisible avec le statut, la raison, les informations éventuellement manquantes, la prochaine étape et les sources officielles.
+
+## Lancer le questionnaire interactif local
+
+```bash
+python -m src.demo
+```
+
+Le prototype interactif garde les réponses uniquement en mémoire pendant l’exécution. Il ne les enregistre pas dans le dépôt.
+
+## Tests
+
+```bash
+python -m pytest -q
+```
+
+GitHub Actions exécute également les tests automatiquement à chaque modification.
+
+## Données personnelles
+
+Ce dépôt est public. Ne jamais y ajouter de profil réel, nom, adresse, numéro de sécurité sociale, numéro allocataire, document médical, avis d’imposition ou autre donnée personnelle.
+
+Les fichiers présents dans `examples/` et `tests/` doivent rester entièrement fictifs.
+
+## Prochaine étape
+
+Construire une première interface web locale qui réutilise exactement le même questionnaire, le même schéma de profil, le même moteur et le même rendu de résultats, sans dupliquer les règles administratives dans l’interface.
