@@ -1,0 +1,51 @@
+version: "1.0"
+updated_at: "2026-09-07"
+policy:
+  primary_sources_required_for:
+    - eligibility
+    - thresholds
+    - amounts
+    - age
+    - duration
+    - cumulative_rules
+    - retroactivity
+    - appeal_deadlines
+  preferred_domains:
+    - service-public.fr
+    - legifrance.gouv.fr
+    - ameli.fr
+    - caf.fr
+    - msa.fr
+    - cnsa.fr
+    - monparcourshandicap.gouv.fr
+    - justice.fr
+    - solidarites.gouv.fr
+    - travail-emploi.gouv.fr
+    - impots.gouv.fr
+    - lassuranceretraite.fr
+
+sources:
+  css_ameli:
+    authority: "Assurance Maladie"
+    url: "https://www.ameli.fr/assure/droits-demarches/difficultes-acces-droits-soins/complementaire-sante/complementaire-sante-solidaire"
+    last_checked: "2026-09-07"
+  pch_service_public:
+    authority: "Service-Public.fr"
+    url: "https://www.service-public.fr/particuliers/vosdroits/F14202"
+    last_checked: "2026-09-07"
+  invalidite_ameli:
+    authority: "Assurance Maladie"
+    url: "https://www.ameli.fr/assure/droits-demarches/invalidite-handicap/invalidite/pension-invalidite-definition-conditions"
+    last_checked: "2026-09-07"
+  apa_service_public:
+    authority: "Service-Public.fr"
+    url: "https://www.service-public.fr/particuliers/vosdroits/F10009"
+    last_checked: "2026-09-07"
+  ajpa_service_public:
+    authority: "Service-Public.fr"
+    url: "https://www.service-public.fr/particuliers/vosdroits/F16920"
+    last_checked: "2026-09-07"
+  aj_justice:
+    authority: "Justice.fr"
+    url: "https://www.justice.fr/fiche/aide-juridictionnelle-dune-procedure-france"
+    last_checked: "2026-09-07"
