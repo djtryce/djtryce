@@ -17,6 +17,8 @@ Le MVP de démonstration fonctionne de bout en bout :
 
 `questionnaire -> profile.json -> moteur de règles -> résultats expliqués et sourcés`
 
+Une première interface web locale est maintenant disponible dans `app.py`.
+
 Le périmètre couvre environ 20 dispositifs prioritaires. Certaines règles restent volontairement en orientation, simulation externe ou évaluation humaine.
 
 ## Classification des règles
@@ -26,7 +28,7 @@ Le périmètre couvre environ 20 dispositifs prioritaires. Certaines règles res
 - **H** : règle vérifiée mais nécessitant une appréciation humaine ou administrative
 - **C** : information insuffisamment sécurisée
 
-## Lancer la démonstration fictive
+## Lancer l'interface web
 
 Installer les dépendances :
 
@@ -34,21 +36,32 @@ Installer les dépendances :
 python -m pip install -r requirements.txt
 ```
 
-Puis lancer le scénario fictif fourni dans le dépôt :
+Puis lancer :
+
+```bash
+python -m streamlit run app.py
+```
+
+Une page web s'ouvre avec 4 étapes :
+
+1. foyer et résidence ;
+2. logement et ressources ;
+3. travail, santé et autres situations ;
+4. droits et démarches à explorer.
+
+Les réponses du questionnaire web sont utilisées uniquement en mémoire par l'application. Elles ne sont pas enregistrées dans le dépôt GitHub.
+
+## Lancer la démonstration fictive dans le terminal
 
 ```bash
 python -m src.demo --answers examples/demo_answers.yaml
 ```
 
-Le programme affiche une orientation lisible avec le statut, la raison, les informations éventuellement manquantes, la prochaine étape et les sources officielles.
-
-## Lancer le questionnaire interactif local
+## Lancer l'ancien questionnaire interactif dans le terminal
 
 ```bash
 python -m src.demo
 ```
-
-Le prototype interactif garde les réponses uniquement en mémoire pendant l’exécution. Il ne les enregistre pas dans le dépôt.
 
 ## Tests
 
@@ -56,7 +69,7 @@ Le prototype interactif garde les réponses uniquement en mémoire pendant l’e
 python -m pytest -q
 ```
 
-GitHub Actions exécute également les tests automatiquement à chaque modification.
+GitHub Actions vérifie également automatiquement la syntaxe de `app.py` et lance les tests à chaque modification.
 
 ## Données personnelles
 
@@ -64,6 +77,8 @@ Ce dépôt est public. Ne jamais y ajouter de profil réel, nom, adresse, numér
 
 Les fichiers présents dans `examples/` et `tests/` doivent rester entièrement fictifs.
 
+L'interface web marque les profils saisis comme éphémères : ils restent en mémoire pour produire le résultat et ne sont pas écrits dans GitHub.
+
 ## Prochaine étape
 
-Construire une première interface web locale qui réutilise exactement le même questionnaire, le même schéma de profil, le même moteur et le même rendu de résultats, sans dupliquer les règles administratives dans l’interface.
+Tester l'interface avec des profils fictifs, corriger l'expérience utilisateur, puis préparer un environnement privé et sécurisé avant tout essai avec de vraies situations personnelles.
