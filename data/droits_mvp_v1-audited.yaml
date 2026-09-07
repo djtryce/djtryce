@@ -1,4 +1,4 @@
-version: "1.0-audited"
+version: "1.1-audited"
 verified_at: "2026-09-07"
 status: "scaffold"
 methodology:
@@ -137,6 +137,54 @@ rights:
     sources:
       - "https://www.service-public.fr/particuliers/vosdroits/F38492"
 
+  aah:
+    name: "Allocation aux adultes handicapés"
+    status: "orientation_only"
+    confidence:
+      age_and_residence: A
+      disability_assessment: H
+      resource_calculation: B
+    rules:
+      minimum_age_general: 20
+      minimum_age_if_not_family_dependent: 16
+      disability_assessment_required: true
+    human_evaluation_required: true
+    sources:
+      - "https://www.monparcourshandicap.gouv.fr/aides/lallocation-aux-adultes-handicapes-aah"
+      - "https://www.monparcourshandicap.gouv.fr/demarches/demarches-pour-demander-laah"
+
+  aeeh:
+    name: "Allocation d'éducation de l'enfant handicapé"
+    status: "orientation_only"
+    confidence:
+      child_age: A
+      disability_assessment: H
+      supplement_calculation: H
+    rules:
+      child_age_max_exclusive: 20
+      disability_assessment_required: true
+    human_evaluation_required: true
+    sources:
+      - "https://www.monparcourshandicap.gouv.fr/aides/lallocation-deducation-de-lenfant-handicape-aeeh-et-ses-complements"
+
+  fsl:
+    name: "Fonds de solidarité pour le logement"
+    status: "orientation_local_only"
+    confidence:
+      national_principle: A
+      local_opening_conditions: C
+      amount: C
+    rules:
+      local_rules_required: true
+      signals:
+        - "rent_arrears"
+        - "energy_debt"
+        - "installation_costs"
+    human_evaluation_required: true
+    sources:
+      - "https://www.service-public.fr/particuliers/vosdroits/F38492"
+
 notes:
-  - "Ce fichier est volontairement incomplet : seules les règles déjà auditées sont présentes."
-  - "Les autres dispositifs doivent rester hors moteur tant qu'ils ne sont pas sourcés au niveau requis."
+  - "Ce fichier est volontairement incomplet : seules les règles déjà auditées ou des règles d'orientation prudentes sont présentes."
+  - "Les dispositifs restant non sourcés au niveau requis restent hors moteur."
+  - "Le FSL exige une couche locale départementale avant toute conclusion sur l'ouverture ou le montant."
