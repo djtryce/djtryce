@@ -1,4 +1,4 @@
-version: "1.1"
+version: "1.2"
 base_profile: "examples/profile_test_01.json"
 notes:
   - "Chaque cas part du profil fictif de base et applique uniquement les mutations listées."
@@ -53,6 +53,91 @@ cases:
       household.household_size: 2
     expect:
       css: INFORMATION_INSUFFISANTE
+
+  - id: rsa_adult
+    description: "Adulte de plus de 25 ans résidant en France"
+    set:
+      person.age: 35
+      residence.stable_residence: true
+    expect:
+      rsa: A_SIMULER
+
+  - id: rsa_young_parent
+    description: "Jeune de 23 ans avec un enfant à charge"
+    set:
+      person.age: 23
+      household.dependent_children_count: 1
+      residence.stable_residence: true
+    expect:
+      rsa: A_SIMULER
+
+  - id: rsa_young_active_hours
+    description: "Jeune actif de 23 ans avec 3214 heures déclarées sur trois ans"
+    set:
+      person.age: 23
+      household.dependent_children_count: 0
+      household.pregnancy: false
+      employment.hours_worked_last_3_years: 3214
+      residence.stable_residence: true
+    expect:
+      rsa: A_SIMULER
+
+  - id: rsa_under_18
+    description: "Mineur de 17 ans"
+    set:
+      person.age: 17
+    expect:
+      rsa: CONDITIONS_DECLAREES_INCOMPATIBLES
+
+  - id: rsa_unstable_residence
+    description: "Résidence stable en France non déclarée"
+    set:
+      person.age: 35
+      residence.stable_residence: false
+    expect:
+      rsa: CONDITIONS_DECLAREES_INCOMPATIBLES
+
+  - id: ppa_employee
+    description: "Salarié de 30 ans"
+    set:
+      person.age: 30
+      employment.status: employee
+      employment.working: true
+      residence.stable_residence: true
+    expect:
+      prime_activite: A_SIMULER
+
+  - id: ppa_self_employed
+    description: "Travailleur indépendant"
+    set:
+      person.age: 40
+      employment.status: self_employed
+      employment.working: true
+      residence.stable_residence: true
+    expect:
+      prime_activite: A_SIMULER
+
+  - id: ppa_student_missing_gross_income
+    description: "Étudiant actif sans revenu brut mensuel renseigné"
+    set:
+      person.age: 22
+      person.is_student: true
+      employment.status: student
+      employment.working: true
+      employment.monthly_gross_earned_income: null
+      residence.stable_residence: true
+    expect:
+      prime_activite: A_SIMULER
+
+  - id: ppa_inactive_absent
+    description: "Personne inactive sans activité"
+    set:
+      person.is_student: false
+      employment.status: inactive
+      employment.working: false
+      employment.partial_or_technical_unemployment: false
+    absent:
+      - prime_activite
 
   - id: housing_tenant
     description: "Locataire"
@@ -113,6 +198,55 @@ cases:
       health_disability.gir_level: 5
     expect:
       apa: CONDITIONS_DECLAREES_INCOMPATIBLES
+
+  - id: aspa_age_70_ready
+    description: "Retraité de 70 ans ayant liquidé toutes ses retraites"
+    set:
+      person.age: 70
+      person.is_retired: true
+      person.all_retirement_pensions_liquidated: true
+      residence.stable_residence: true
+    expect:
+      aspa: A_SIMULER
+
+  - id: aspa_missing_pension_liquidation
+    description: "Retraité de 70 ans sans information sur la liquidation de toutes les retraites"
+    set:
+      person.age: 70
+      person.is_retired: true
+      person.all_retirement_pensions_liquidated: null
+      residence.stable_residence: true
+    expect:
+      aspa: INFORMATION_INSUFFISANTE
+
+  - id: aspa_age_63_inaptitude
+    description: "Retraité de 63 ans avec inaptitude reconnue"
+    set:
+      person.age: 63
+      person.is_retired: true
+      person.retirement_inaptitude_recognized: true
+      person.all_retirement_pensions_liquidated: true
+      residence.stable_residence: true
+    expect:
+      aspa: A_SIMULER
+
+  - id: aspa_age_63_unknown_exception
+    description: "Retraité de 63 ans sans information sur l'inaptitude ou l'incapacité permanente"
+    set:
+      person.age: 63
+      person.is_retired: true
+      person.retirement_inaptitude_recognized: null
+      person.permanent_incapacity_percent: null
+    expect:
+      aspa: EVALUATION_HUMAINE_NECESSAIRE
+
+  - id: aspa_under_62
+    description: "Retraité de 61 ans"
+    set:
+      person.age: 61
+      person.is_retired: true
+    expect:
+      aspa: CONDITIONS_DECLAREES_INCOMPATIBLES
 
   - id: disability_pch_signal
     description: "Difficultés de santé ou handicap déclarées"
