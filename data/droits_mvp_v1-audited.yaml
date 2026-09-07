@@ -1,0 +1,142 @@
+version: "1.0-audited"
+verified_at: "2026-09-07"
+status: "scaffold"
+methodology:
+  confidence_levels:
+    A: "Règle vérifiée sur source officielle primaire et automatisable"
+    B: "Règle vérifiée mais calcul ou simulation externe nécessaire"
+    H: "Règle vérifiée mais appréciation humaine ou administrative nécessaire"
+    C: "Information insuffisamment sécurisée"
+  principle: "Ne jamais conclure à une éligibilité définitive lorsqu'une appréciation administrative est requise."
+
+rights:
+  css:
+    name: "Complémentaire santé solidaire"
+    status: "audited_partial"
+    confidence:
+      residence: A
+      resource_period: A
+      thresholds: A
+      automaticity_rsa: A
+      amount_calculation: B
+    rules:
+      resource_period: "12 mois civils précédant le mois antérieur à la demande"
+      rsa_automaticity:
+        automatic: true
+        exception: "opposition expresse"
+      metropolitan_thresholds_one_person:
+        free_annual: 10421
+        contribution_annual: 14069
+      housing_forfait:
+        applies: true
+        one_person_monthly: 78.20
+    human_evaluation_required: false
+    sources:
+      - "https://www.ameli.fr/assure/droits-demarches/difficultes-acces-droits-soins/complementaire-sante/complementaire-sante-solidaire"
+      - "https://www.ameli.fr/assure/droits-demarches/difficultes-acces-droits-soins/complementaire-sante/complementaire-sante-beneficiaires"
+      - "https://www.ameli.fr/assure/droits-demarches/difficultes-acces-droits-soins/complementaire-sante/complementaire-sante-solidaire-demande"
+
+  pension_invalidite:
+    name: "Pension d'invalidité"
+    status: "audited_partial"
+    confidence:
+      administrative_conditions: A
+      medical_assessment: H
+      amount: C
+    rules:
+      capacity_loss_minimum: "2/3"
+      medical_decision_by: "médecin-conseil de l'Assurance Maladie"
+    human_evaluation_required: true
+    sources:
+      - "https://www.ameli.fr/assure/droits-demarches/invalidite-handicap/invalidite/pension-invalidite-definition-conditions"
+
+  pch:
+    name: "Prestation de compensation du handicap"
+    status: "audited_partial"
+    confidence:
+      opening_resource_condition: A
+      reimbursement_rate: A
+      disability_assessment: H
+      detailed_amounts: B
+    rules:
+      resource_condition_for_opening: false
+      resources_affect_rate: true
+    human_evaluation_required: true
+    sources:
+      - "https://www.service-public.fr/particuliers/vosdroits/F14202"
+
+  apa:
+    name: "Allocation personnalisée d'autonomie"
+    status: "audited_partial"
+    confidence:
+      age_and_gir: A
+      participation_amount: B
+      autonomy_assessment: H
+      pch_interaction: A
+    human_evaluation_required: true
+    sources:
+      - "https://www.service-public.fr/particuliers/vosdroits/F10009"
+
+  ajpa:
+    name: "Allocation journalière du proche aidant"
+    status: "audited_partial"
+    confidence:
+      amount: A
+      duration_limits: A
+      opening_conditions: B
+    rules:
+      full_day_amount: 65.80
+      half_day_amount: 32.90
+      max_days_per_month: 22
+      max_days_per_aided_person: 66
+      max_days_over_career: 264
+    sources:
+      - "https://www.service-public.fr/particuliers/vosdroits/F16920"
+
+  aide_juridictionnelle:
+    name: "Aide juridictionnelle"
+    status: "audited_partial"
+    confidence:
+      total_aid_threshold_single_person: A
+      patrimony_test: A
+      case_specific_calculation: B
+    rules:
+      single_person_total_aid_rfr_max: 12957
+      patrimony_test_required: true
+    sources:
+      - "https://www.justice.fr/fiche/aide-juridictionnelle-dune-procedure-france"
+
+  rqth:
+    name: "Reconnaissance de la qualité de travailleur handicapé"
+    status: "orientation_only"
+    confidence:
+      administrative_process: A
+      disability_assessment: H
+    human_evaluation_required: true
+    sources:
+      - "https://www.service-public.fr/particuliers/vosdroits/F1650"
+
+  cmi:
+    name: "Carte mobilité inclusion"
+    status: "orientation_only"
+    confidence:
+      administrative_process: A
+      mention_specific_assessment: H
+    human_evaluation_required: true
+    sources:
+      - "https://www.service-public.fr/particuliers/vosdroits/F34049"
+
+  apl_alf_als:
+    name: "APL / ALF / ALS"
+    status: "orientation_plus_simulation"
+    confidence:
+      principle: A
+      exact_amount: B
+    rules:
+      external_simulation_required: true
+    sources:
+      - "https://www.service-public.fr/particuliers/vosdroits/F38492"
+
+notes:
+  - "Ce fichier est volontairement incomplet : seules les règles déjà auditées sont présentes."
+  - "Les autres dispositifs doivent rester hors moteur tant qu'ils ne sont pas sourcés au niveau requis."
