@@ -1,0 +1,296 @@
+version: "1.0"
+language: "fr"
+title: "Questionnaire d'orientation vers les droits"
+principles:
+  - "Poser des questions de vie courante, pas des noms de prestations."
+  - "Autoriser l'utilisateur à répondre qu'il ne sait pas."
+  - "Ne jamais présenter le questionnaire comme une décision administrative."
+
+questions:
+  - id: age
+    text: "Quel âge avez-vous ?"
+    type: integer
+    required: true
+    target: person.age
+
+  - id: marital_status
+    text: "Vivez-vous seul, en couple, séparé ou veuf/veuve ?"
+    type: choice
+    choices: [single, couple, separated, widowed, unknown]
+    required: true
+    target: household.marital_status
+
+  - id: child_ages
+    text: "Quel âge ont les enfants à votre charge ? Indiquez les âges séparés par des virgules. Laissez vide si vous n'en avez pas."
+    type: integer_list
+    required: false
+
+  - id: school_child_ages
+    text: "Parmi ces enfants, lesquels sont scolarisés ? Indiquez leurs âges séparés par des virgules."
+    type: integer_list
+    required: false
+    when:
+      question: child_ages
+      op: nonempty
+
+  - id: disabled_child_ages
+    text: "Parmi ces enfants, lesquels ont une difficulté importante de santé ou un handicap ? Indiquez leurs âges séparés par des virgules."
+    type: integer_list
+    required: false
+    when:
+      question: child_ages
+      op: nonempty
+
+  - id: single_parent
+    text: "Élevez-vous seul(e) au moins un enfant ?"
+    type: boolean
+    required: false
+    target: household.single_parent
+    when:
+      question: child_ages
+      op: nonempty
+
+  - id: pregnancy
+    text: "Y a-t-il actuellement une grossesse dans votre foyer qui doit être prise en compte ?"
+    type: boolean
+    required: false
+    target: household.pregnancy
+
+  - id: stable_residence
+    text: "Vivez-vous habituellement et de façon stable en France ?"
+    type: boolean
+    required: true
+    target: residence.stable_residence
+
+  - id: department_code
+    text: "Dans quel département vivez-vous ? Indiquez le numéro, par exemple 31."
+    type: string
+    required: false
+    target: residence.department_code
+    when:
+      question: stable_residence
+      op: equals
+      value: true
+
+  - id: nationality_status
+    text: "Quelle est votre situation de nationalité ou de séjour ?"
+    type: choice
+    choices: [french, eu_eea_swiss, non_eu, stateless_or_refugee, unknown]
+    required: false
+    target: residence.nationality_status
+
+  - id: valid_residence_permit
+    text: "Avez-vous un titre de séjour en cours de validité ?"
+    type: boolean
+    required: false
+    target: residence.valid_residence_permit
+    when:
+      question: nationality_status
+      op: equals
+      value: non_eu
+
+  - id: housing_status
+    text: "Quelle est votre situation de logement ?"
+    type: choice
+    choices: [tenant, owner, hosted_free, social_residence, homeless, emergency_accommodation, other, unknown]
+    required: true
+    target: housing.status
+
+  - id: monthly_rent
+    text: "Combien payez-vous chaque mois pour votre loyer ou redevance ?"
+    type: number
+    required: false
+    target: housing.monthly_rent_or_fee
+    when:
+      question: housing_status
+      op: in
+      value: [tenant, social_residence]
+
+  - id: rent_arrears
+    text: "Avez-vous actuellement des loyers ou charges de logement impayés ?"
+    type: boolean
+    required: false
+    target: housing.rent_arrears
+
+  - id: energy_debt
+    text: "Avez-vous actuellement une dette d'électricité, de gaz ou d'énergie ?"
+    type: boolean
+    required: false
+    target: housing.energy_debt
+
+  - id: resources_known
+    text: "Connaissez-vous approximativement les ressources de votre foyer ?"
+    type: boolean
+    required: true
+    target: income.resources_known
+
+  - id: annual_resources
+    text: "À combien estimez-vous les ressources annuelles de votre foyer ?"
+    type: number
+    required: false
+    target: income.annual_household_resources
+    when:
+      question: resources_known
+      op: equals
+      value: true
+
+  - id: monthly_resources
+    text: "À combien estimez-vous les ressources mensuelles actuelles de votre foyer ?"
+    type: number
+    required: false
+    target: income.monthly_household_resources
+    when:
+      question: resources_known
+      op: equals
+      value: true
+
+  - id: rfr
+    text: "Connaissez-vous votre revenu fiscal de référence ? Si oui, indiquez le montant."
+    type: number
+    required: false
+    target: income.reference_tax_income
+
+  - id: employment_status
+    text: "Quelle est votre situation professionnelle principale ?"
+    type: choice
+    choices: [employee, self_employed, unemployed, inactive, retired, student, sick_leave, other, unknown]
+    required: true
+    target: employment.status
+
+  - id: working
+    text: "Travaillez-vous actuellement, même à temps partiel ?"
+    type: boolean
+    required: false
+    target: employment.working
+
+  - id: monthly_earned_income
+    text: "Quel est approximativement votre revenu professionnel mensuel ?"
+    type: number
+    required: false
+    target: employment.monthly_earned_income
+    when:
+      question: working
+      op: equals
+      value: true
+
+  - id: monthly_gross_earned_income
+    text: "Quel est votre revenu professionnel brut mensuel approximatif ?"
+    type: number
+    required: false
+    target: employment.monthly_gross_earned_income
+    when:
+      question: employment_status
+      op: equals
+      value: student
+
+  - id: hours_worked_last_3_years
+    text: "Si vous avez moins de 25 ans, connaissez-vous approximativement le nombre d'heures travaillées pendant les 3 dernières années ?"
+    type: number
+    required: false
+    target: employment.hours_worked_last_3_years
+    when:
+      question: age
+      op: lt
+      value: 25
+
+  - id: health_difficulty
+    text: "Avez-vous une maladie, un handicap ou des difficultés durables qui compliquent votre vie quotidienne ou votre autonomie ?"
+    type: boolean
+    required: true
+    target: health_disability.health_or_disability_difficulty
+
+  - id: mobility_difficulty
+    text: "Avez-vous des difficultés importantes pour vous déplacer ?"
+    type: boolean
+    required: false
+    target: health_disability.mobility_difficulty
+    when:
+      question: health_difficulty
+      op: equals
+      value: true
+
+  - id: daily_living_difficulty
+    text: "Avez-vous des difficultés importantes pour des actes de la vie quotidienne ?"
+    type: boolean
+    required: false
+    target: health_disability.daily_living_difficulty
+    when:
+      question: health_difficulty
+      op: equals
+      value: true
+
+  - id: work_limitation
+    text: "Votre santé ou votre handicap limite-t-il votre capacité à travailler ou à conserver un emploi ?"
+    type: boolean
+    required: false
+    target: employment.work_limitation_due_to_health_or_disability
+    when:
+      question: health_difficulty
+      op: equals
+      value: true
+
+  - id: gir_level
+    text: "Connaissez-vous votre GIR ? Indiquez un chiffre de 1 à 6, sinon laissez vide."
+    type: integer
+    required: false
+    target: health_disability.gir_level
+    when:
+      question: age
+      op: gte
+      value: 60
+
+  - id: is_retired
+    text: "Êtes-vous retraité(e) ?"
+    type: boolean
+    required: false
+    target: person.is_retired
+    when:
+      question: age
+      op: gte
+      value: 60
+
+  - id: all_pensions_liquidated
+    text: "Avez-vous demandé et liquidé toutes les retraites auxquelles vous pouvez prétendre en France et à l'étranger ?"
+    type: boolean
+    required: false
+    target: person.all_retirement_pensions_liquidated
+    when:
+      question: is_retired
+      op: equals
+      value: true
+
+  - id: retirement_inaptitude
+    text: "Une inaptitude au travail pour la retraite vous a-t-elle été officiellement reconnue ?"
+    type: boolean
+    required: false
+    target: person.retirement_inaptitude_recognized
+    when:
+      question: age
+      op: between
+      value: [62, 64]
+
+  - id: caregiver
+    text: "Aidez-vous régulièrement un proche en perte d'autonomie, malade ou handicapé ?"
+    type: boolean
+    required: false
+    target: family.caregiver_for_relative
+
+  - id: unpaid_child_support
+    text: "Une pension alimentaire destinée à un enfant est-elle impayée ou insuffisamment versée ?"
+    type: boolean
+    required: false
+    target: family.unpaid_child_support
+    when:
+      question: child_ages
+      op: nonempty
+
+  - id: legal_proceeding
+    text: "Avez-vous actuellement une procédure judiciaire ou besoin d'engager une procédure ?"
+    type: boolean
+    required: false
+    target: legal_admin.legal_proceeding
+
+  - id: existing_rights
+    text: "Recevez-vous déjà certaines de ces aides ? Indiquez les codes séparés par des virgules : rsa, prime_activite, apl, alf, als, aah, pch, rqth, cmi, css, pension_invalidite, aspa, apa, fsl, cheque_energie, aide_juridictionnelle, asf, ars, aeeh, ajpa."
+    type: string_list
+    required: false
