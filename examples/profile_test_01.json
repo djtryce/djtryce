@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "profile_id": "test-profile-01",
+  "assessment_date": "2026-09-07",
+  "person": {
+    "age": 52,
+    "date_of_birth_known": true,
+    "is_student": false,
+    "is_retired": false
+  },
+  "household": {
+    "marital_status": "single",
+    "household_size": 1,
+    "dependent_children_count": 0,
+    "single_parent": false,
+    "pregnancy": false
+  },
+  "residence": {
+    "country": "France",
+    "metropolitan_or_overseas": "metropolitan_france",
+    "department_code": "31",
+    "postal_code": "31000",
+    "stable_residence": true,
+    "residence_duration_months": 120,
+    "nationality_status": "french",
+    "valid_residence_permit": null
+  },
+  "housing": {
+    "status": "tenant",
+    "monthly_rent_or_fee": 650,
+    "housing_aid_already_received": false,
+    "rent_arrears": false,
+    "energy_debt": false,
+    "housing_convention_known": null
+  },
+  "income": {
+    "resources_known": true,
+    "monthly_household_resources": 900,
+    "annual_household_resources": 10800,
+    "reference_tax_income": 10500,
+    "movable_assets": 1000,
+    "real_estate_assets_excluding_main_home": 0,
+    "resource_period_start": "2025-08-01",
+    "resource_period_end": "2026-07-31"
+  },
+  "employment": {
+    "status": "inactive",
+    "working": false,
+    "monthly_earned_income": 0,
+    "registered_france_travail": false,
+    "work_limitation_due_to_health_or_disability": true,
+    "insurance_affiliation_months": 36,
+    "hours_worked_last_12_months": 0
+  },
+  "health_disability": {
+    "health_or_disability_difficulty": true,
+    "difficulty_expected_duration_months": 24,
+    "difficulty_absolute_count": 0,
+    "difficulty_severe_count": 2,
+    "mobility_difficulty": true,
+    "daily_living_difficulty": true,
+    "needs_human_assistance": null,
+    "mdph_file_exists": false,
+    "mdph_decision_exists": false,
+    "disability_rate_percent": null,
+    "gir_level": null,
+    "medical_capacity_loss_two_thirds_assessed": null,
+    "requires_third_person_assistance": null
+  },
+  "family": {
+    "children": [],
+    "unpaid_child_support": false,
+    "caregiver_for_relative": false,
+    "number_of_aided_persons_over_career": 0
+  },
+  "legal_admin": {
+    "legal_proceeding": false,
+    "urgent_legal_situation": false,
+    "recent_administrative_refusal": false,
+    "decision_date": null,
+    "appeal_deadline_known": null
+  },
+  "existing_rights": {
+    "rsa": false,
+    "prime_activite": false,
+    "apl": false,
+    "alf": false,
+    "als": false,
+    "aah": false,
+    "pch": false,
+    "rqth": false,
+    "cmi": false,
+    "css": false,
+    "pension_invalidite": false,
+    "aspa": false,
+    "apa": false,
+    "fsl": false,
+    "cheque_energie": false,
+    "aide_juridictionnelle": false,
+    "asf": false,
+    "ars": false,
+    "aeeh": false,
+    "ajpa": false
+  },
+  "metadata": {
+    "source": "test_fixture",
+    "contains_real_personal_data": false,
+    "notes": "Profil entièrement fictif destiné aux tests du MVP."
+  }
+}
